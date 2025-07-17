@@ -26,7 +26,7 @@ locals {
       metric_name = "IAMPolicyChanges"
       alarm_name  = "IAM policy changes"
       alarm_desc  = "Detects create/update/delete IAM policy events"
-      pattern     = "{ ($.eventSource = \"iam.amazonaws.com\") && ($.eventName = \"CreatePolicy\" || $.eventName = \"DeletePolicy\" || $.eventName = \"CreatePolicyVersion\" || $.eventName = \"DeletePolicyVersion\" || $.eventName = \"Attach*Policy\" || $.eventName = \"Detach*Policy\") }"
+      pattern     = "{ ($.eventName = DeleteGroupPolicy) || ($.eventName = DeleteRolePolicy) || ($.eventName = DeleteUserPolicy) || ($.eventName = PutGroupPolicy) || ($.eventName = PutRolePolicy) || ($.eventName = PutUserPolicy) || ($.eventName = CreatePolicy) || ($.eventName = DeletePolicy) || ($.eventName = CreatePolicyVersion) || ($.eventName = DeletePolicyVersion) || ($.eventName = AttachRolePolicy) || ($.eventName = DetachRolePolicy) || ($.eventName = AttachUserPolicy) || ($.eventName = DetachUserPolicy) || ($.eventName = AttachGroupPolicy) || ($.eventName = DetachGroupPolicy) }"
     }
 
     cloudtrail_cfg_changes = {
