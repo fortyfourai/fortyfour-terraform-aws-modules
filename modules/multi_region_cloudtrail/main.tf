@@ -1,6 +1,3 @@
-provider "aws" {
-  region = "us-west-2"
-}
 resource "aws_cloudwatch_log_group" "trail" {
   name              = "/aws/cloudtrail/${var.trail_name}"
   retention_in_days = var.cloudwatch_log_retention_days
