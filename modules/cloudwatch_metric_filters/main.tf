@@ -5,14 +5,14 @@ locals {
       metric_name  = "UnauthorizedAPICalls"
       alarm_name   = "Unauthorized API Calls"
       alarm_desc   = "Detects unauthorized/denied API calls"
-      pattern      = "{ ($.errorCode = \"*UnauthorizedOperation\") || ($.errorCode = \"AccessDenied*\") }"
+      pattern      = "{ ($.errorCode = \"*UnauthorizedOperation\" || $.errorCode = \"AccessDenied*\") && ($.sourceIPAddress != \"delivery.logs.amazonaws.com\") && ($.eventName != \"HeadBucket\") }"
     }
 
     console_signin_without_mfa = {
       metric_name = "ConsoleSigninNoMFA"
-      alarm_name  = "Console sign‑in without MFA"
+      alarm_name  = "Console sign-in without MFA"
       alarm_desc  = "Detects IAM user console logins without MFA"
-      pattern     = "{ ($.eventName = \"ConsoleLogin\") && ($.userIdentity.type = \"IAMUser\") && ($.additionalEventData.MFAUsed != \"Yes\") && ($.responseElements.ConsoleLogin = \"Success\") }"
+      pattern     = "{ ($.eventName = \"ConsoleLogin\") && ($.userIdentity.type = IAMUser) && ($.additionalEventData.MFAUsed != \"Yes\") }"
     }
 
     root_usage = {
@@ -33,70 +33,70 @@ locals {
       metric_name = "CloudTrailCfgChanges"
       alarm_name  = "CloudTrail configuration changes"
       alarm_desc  = "Detects create/update/delete/start/stop CloudTrail"
-      pattern     = "{ ($.eventSource = \"cloudtrail.amazonaws.com\") && ($.eventName = \"CreateTrail\" || $.eventName = \"UpdateTrail\" || $.eventName = \"DeleteTrail\" || $.eventName = \"StartLogging\" || $.eventName = \"StopLogging\") }"
+      pattern     = "{ ($.eventSource = cloudtrail.amazonaws.com) && ($.eventName = CreateTrail || $.eventName = UpdateTrail || $.eventName = DeleteTrail || $.eventName = StartLogging || $.eventName = StopLogging) }"
     }
 
     console_auth_failures = {
       metric_name = "ConsoleAuthFailures"
       alarm_name  = "Console authentication failures"
       alarm_desc  = "Detects failed console logins"
-      pattern     = "{ ($.eventName = \"ConsoleLogin\") && ($.errorMessage = \"Failed authentication\") }"
+      pattern     = "{ ($.eventName = ConsoleLogin) && ($.errorMessage = \"Failed authentication\") }"
     }
 
     disable_or_schedule_cmk_deletion = {
       metric_name = "CMKDisableOrDeletion"
       alarm_name  = "CMK disable or scheduled deletion"
       alarm_desc  = "Detects DisableKey or ScheduleKeyDeletion for customer-managed CMKs"
-      pattern     = "{ ($.eventSource = \"kms.amazonaws.com\") && ($.eventName = \"DisableKey\" || $.eventName = \"ScheduleKeyDeletion\") }"
+      pattern     = "{ ($.eventSource = kms.amazonaws.com) && ($.eventName = DisableKey || $.eventName = ScheduleKeyDeletion) }"
     }
 
     s3_bucket_policy_changes = {
       metric_name = "S3BucketPolicyChanges"
       alarm_name  = "S3 bucket policy changes"
       alarm_desc  = "Detects changes to S3 bucket policies/ACLs/CORS/Lifecycle"
-      pattern     = "{ ($.eventSource = \"s3.amazonaws.com\") && ($.eventName = \"PutBucketAcl\" || $.eventName = \"PutBucketPolicy\" || $.eventName = \"PutBucketCors\" || $.eventName = \"PutBucketLifecycle\" || $.eventName = \"PutBucketReplication\" || $.eventName = \"DeleteBucketPolicy\" || $.eventName = \"DeleteBucketCors\" || $.eventName = \"DeleteBucketLifecycle\" || $.eventName = \"DeleteBucketReplication\") }"
+      pattern     = "{ ($.eventSource = s3.amazonaws.com) && ($.eventName = PutBucketAcl || $.eventName = PutBucketPolicy || $.eventName = PutBucketCors || $.eventName = PutBucketLifecycle || $.eventName = PutBucketReplication || $.eventName = DeleteBucketPolicy || $.eventName = DeleteBucketCors || $.eventName = DeleteBucketLifecycle || $.eventName = DeleteBucketReplication) }"
     }
 
     config_cfg_changes = {
       metric_name = "ConfigCfgChanges"
       alarm_name  = "AWS Config configuration changes"
       alarm_desc  = "Detects stop/delete/modify Config recorder & delivery channel"
-      pattern     = "{ ($.eventSource = \"config.amazonaws.com\") && ($.eventName = \"StopConfigurationRecorder\" || $.eventName = \"DeleteDeliveryChannel\" || $.eventName = \"PutDeliveryChannel\" || $.eventName = \"PutConfigurationRecorder\") }"
+      pattern     = "{ ($.eventSource = config.amazonaws.com) && ($.eventName = StopConfigurationRecorder || $.eventName = DeleteDeliveryChannel || $.eventName = PutDeliveryChannel || $.eventName = PutConfigurationRecorder) }"
     }
 
     security_group_changes = {
       metric_name = "SGChanges"
       alarm_name  = "Security Group changes"
       alarm_desc  = "Detects ingress/egress authz changes to SGs"
-      pattern     = "{ ($.eventName = \"AuthorizeSecurityGroupIngress\" || $.eventName = \"AuthorizeSecurityGroupEgress\" || $.eventName = \"RevokeSecurityGroupIngress\" || $.eventName = \"RevokeSecurityGroupEgress\" || $.eventName = \"CreateSecurityGroup\" || $.eventName = \"DeleteSecurityGroup\") }"
+      pattern     = "{ ($.eventName = AuthorizeSecurityGroupIngress || $.eventName = AuthorizeSecurityGroupEgress || $.eventName = RevokeSecurityGroupIngress || $.eventName = RevokeSecurityGroupEgress || $.eventName = CreateSecurityGroup || $.eventName = DeleteSecurityGroup) }"
     }
 
     nacl_changes = {
       metric_name = "NACLChanges"
       alarm_name  = "Network ACL changes"
       alarm_desc  = "Detects create/delete/replace NACL rules"
-      pattern     = "{ ($.eventName = \"CreateNetworkAcl\" || $.eventName = \"CreateNetworkAclEntry\" || $.eventName = \"DeleteNetworkAcl\" || $.eventName = \"DeleteNetworkAclEntry\" || $.eventName = \"ReplaceNetworkAclEntry\" || $.eventName = \"ReplaceNetworkAclAssociation\") }"
+      pattern     = "{ ($.eventName = CreateNetworkAcl || $.eventName = CreateNetworkAclEntry || $.eventName = DeleteNetworkAcl || $.eventName = DeleteNetworkAclEntry || $.eventName = ReplaceNetworkAclEntry || $.eventName = ReplaceNetworkAclAssociation) }"
     }
 
     network_gateway_changes = {
       metric_name = "NetworkGatewayChanges"
       alarm_name  = "Network Gateway changes"
       alarm_desc  = "Detects create/attach/detach/delete Internet & Customer Gateways"
-      pattern     = "{ ($.eventName = \"CreateCustomerGateway\" || $.eventName = \"DeleteCustomerGateway\" || $.eventName = \"AttachInternetGateway\" || $.eventName = \"CreateInternetGateway\" || $.eventName = \"DeleteInternetGateway\" || $.eventName = \"DetachInternetGateway\") }"
+      pattern     = "{ ($.eventName = CreateCustomerGateway || $.eventName = DeleteCustomerGateway || $.eventName = AttachInternetGateway || $.eventName = CreateInternetGateway || $.eventName = DeleteInternetGateway || $.eventName = DetachInternetGateway) }"
     }
 
     route_table_changes = {
       metric_name = "RouteTableChanges"
       alarm_name  = "Route Table changes"
       alarm_desc  = "Detects create/delete/replace routes or associations"
-      pattern     = "{ ($.eventName = \"CreateRoute\" || $.eventName = \"DeleteRoute\" || $.eventName = \"ReplaceRoute\" || $.eventName = \"ReplaceRouteTableAssociation\") }"
+      pattern     = "{ ($.eventName = CreateRoute || $.eventName = CreateRouteTable || $.eventName = ReplaceRoute || $.eventName = ReplaceRouteTableAssociation || $.eventName = DeleteRoute || $.eventName = DeleteRouteTable || $.eventName = DisassociateRouteTable) }"
     }
 
     vpc_changes = {
       metric_name = "VPCChanges"
       alarm_name  = "VPC changes"
       alarm_desc  = "Detects create/delete/modify VPC & peering configuration"
-      pattern     = "{ ($.eventName = \"CreateVpc\" || $.eventName = \"DeleteVpc\" || $.eventName = \"ModifyVpcAttribute\" || $.eventName = \"AcceptVpcPeeringConnection\" || $.eventName = \"CreateVpcPeeringConnection\" || $.eventName = \"DeleteVpcPeeringConnection\" || $.eventName = \"RejectVpcPeeringConnection\" || $.eventName = \"AttachClassicLinkVpc\" || $.eventName = \"DetachClassicLinkVpc\" || $.eventName = \"DisableVpcClassicLink\" || $.eventName = \"EnableVpcClassicLink\") }"
+      pattern     = "{ ($.eventName = CreateVpc || $.eventName = DeleteVpc || $.eventName = ModifyVpcAttribute || $.eventName = AcceptVpcPeeringConnection || $.eventName = CreateVpcPeeringConnection || $.eventName = DeleteVpcPeeringConnection || $.eventName = RejectVpcPeeringConnection || $.eventName = AttachClassicLinkVpc || $.eventName = DetachClassicLinkVpc || $.eventName = DisableVpcClassicLink || $.eventName = EnableVpcClassicLink) }"
     }
   }
 
